@@ -44,36 +44,42 @@
     </div>
 
     <script>
-        let users = {};
-        let currentUser = '';
-        let isAdmin = false;
-
-        function register() {
+        async function register() {
             const username = document.getElementById('regUsername').value;
             const password = document.getElementById('regPassword').value;
-            if (username && password) {
-                users[username] = password;
-                alert('Регистрация успешна!');
+            const response = await fetch('register.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ username, password })
+            });
+            const result = await response.text();
+            alert(result);
+            if (response.ok) {
                 showLogin();
-            } else {
-                alert('Пожалуйста, введите имя и пароль.');
             }
         }
 
-        function login() {
+        async function login() {
             const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
-            if (users[username] && users[username] === password) {
-                currentUser = username;
+            const response = await fetch('login.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ username, password })
+            });
+            const result = await response.text();
+            alert(result);
+            if (response.ok) {
                 document.getElementById('login').style.display = 'none';
                 document.getElementById('chat').style.display = 'block';
                 document.getElementById('userDisplay').textContent = username;
                 if (username === 'admin') {
-                    isAdmin = true;
                     document.getElementById('adminPanel').style.display = 'block';
                 }
-            } else {
-                alert('Неверное имя пользователя или пароль.');
             }
         }
 
