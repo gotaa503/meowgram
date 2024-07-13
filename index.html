@@ -1,1 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат</title>
+    <style>
+        #chat, #adminPanel, #login {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="registration">
+        <h2>Регистрация</h2>
+        <input type="text" id="regUsername" placeholder="Введите ваше имя">
+        <input type="password" id="regPassword" placeholder="Введите пароль">
+        <button onclick="register()">Зарегистрироваться</button>
+        <button onclick="showLogin()">Вход</button>
+    </div>
+    <div id="login">
+        <h2>Вход</h2>
+        <input type="text" id="loginUsername" placeholder="Введите ваше имя">
+        <input type="password" id="loginPassword" placeholder="Введите пароль">
+        <button onclick="login()">Войти</button>
+        <button onclick="showRegistration()">Регистрация</button>
+    </div>
+    <div id="chat">
+        <h2>Общий чат - <span id="userDisplay"></span></h2>
+        <div id="messages"></div>
+        <input type="text" id="messageInput" placeholder="Введите сообщение">
+        <button onclick="sendMessage()">Отправить</button>
+        <button onclick="createChat()">Создать чат</button>
+    </div>
+    <div id="adminPanel">
+        <h2>Панель администратора</h2>
+        <input type="text" id="groupName" placeholder="Введите имя группы">
+        <input type="file" id="groupAvatar" accept="image/*">
+        <button onclick="updateGroup()">Обновить группу</button>
+        <input type="text" id="kickUser" placeholder="Введите имя пользователя для кика">
+        <button onclick="kickUser()">Кикнуть пользователя</button>
+        <input type="text" id="banUser" placeholder="Введите имя пользователя для бана">
+        <button onclick="banUser()">Забанить пользователя</button>
+    </div>
 
+    <script>
+        let users = {};
+        let currentUser = '';
+        let isAdmin = false;
+
+        function register() {
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+            if (username && password) {
+                users[username] = password;
+                alert('Регистрация успешна!');
+                showLogin();
+            } else {
+                alert('Пожалуйста, введите имя и пароль.');
+            }
+        }
+
+        function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            if (users[username] && users[username] === password) {
+                currentUser = username;
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('chat').style.display = 'block';
+                document.getElementById('userDisplay').textContent = username;
+                if (username === 'admin') {
+                    isAdmin = true;
+                    document.getElementById('adminPanel').style.display = 'block';
+                }
+            } else {
+                alert('Неверное имя пользователя или пароль.');
+            }
+        }
+
+        function showLogin() {
+            document.getElementById('registration').style.display = 'none';
+            document.getElementById('login').style.display = 'block';
+        }
+
+        function showRegistration() {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('registration').style.display = 'block';
+        }
+
+        function sendMessage() {
+            const message = document.getElementById('messageInput').value;
+            if (message) {
+                const messageElement = document.createElement('div');
+                messageElement.textContent = `[${currentUser}]: ${message}`;
+                document.getElementById('messages').appendChild(messageElement);
+                document.getElementById('messageInput').value = '';
+            } else {
+                alert('Пожалуйста, введите сообщение.');
+            }
+        }
+
+        function createChat() {
+            const chatName = prompt('Введите имя нового чата:');
+            if (chatName) {
+                const chatElement = document.createElement('div');
+                chatElement.textContent = `Чат: ${chatName}`;
+                document.getElementById('messages').appendChild(chatElement);
+            }
+        }
+
+        function updateGroup() {
+            const groupName = document.getElementById('groupName').value;
+            const groupAvatar = document.getElementById('groupAvatar').files[0];
+            if (groupName) {
+                document.getElementById('userDisplay').textContent = groupName;
+            }
+            if (groupAvatar) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('userDisplay').style.backgroundImage = `url(${e.target.result})`;
+                };
+                reader.readAsDataURL(groupAvatar);
+            }
+        }
+
+        function kickUser() {
+            const userToKick = document.getElementById('kickUser').value;
+            if (userToKick) {
+                alert(`Пользователь ${userToKick} был кикнут.`);
+            }
+        }
+
+        function banUser() {
+            const userToBan = document.getElementById('banUser').value;
+            if (userToBan) {
+                alert(`Пользователь ${userToBan} был забанен.`);
+            }
+        }
+    </script>
+</body>
+</html>
